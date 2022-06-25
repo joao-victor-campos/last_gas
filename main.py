@@ -19,14 +19,14 @@ async def background_task():
     if now.time() > WHEN:  
         nextweek = datetime.combine(now.date() + timedelta(days=7), time(0))
         seconds = (nextweek - now).total_seconds()  
-        await asyncio.sleep(seconds)   # Sleep until tomorrow and then the loop will start 
+        await asyncio.sleep(seconds)   # Sleep until next week and then the loop will start 
     while True:
         now = datetime.utcnow() # You can do now() or a specific timezone if that matters, but I'll leave it with utcnow
         target_time = datetime.combine(now.date(), WHEN)  
         seconds_until_target = (target_time - now).total_seconds()
         await asyncio.sleep(seconds_until_target)  # Sleep until we hit the target time
         await called_once_a_week()  # Call the helper function that sends the message
-        nextweek = datetime.combine(now.date() + timedelta(days=1), time(0))
+        nextweek = datetime.combine(now.date() + timedelta(days=7), time(0))
         seconds = (nextweek - now).total_seconds()  # Seconds until tomorrow (midnight)
         await asyncio.sleep(seconds)   # Sleep until tomorrow and then the loop will start a new iteration
 
