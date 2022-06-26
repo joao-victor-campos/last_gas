@@ -59,7 +59,7 @@ SCHEDULES = [
         "time_of_day": "14:00:00",
         "args": [],
         "kwargs": {
-            "channel_id": CHANNEL_IDS["private_2"],
+            "channel_id": CHANNEL_IDS["geralt"],
         },
     }
 ]
