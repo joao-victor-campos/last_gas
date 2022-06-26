@@ -1,6 +1,8 @@
 from typing import Any, Dict
+import os
 import yaml
 import json
+
 
 from last_gas.domain.ports import ConfigLoader
 from last_gas.domain.exceptions import InvalidFileExtensionError
@@ -22,3 +24,8 @@ class LocalFileConfigLoader(ConfigLoader):
             "Tried to load file '%s'  with unsuported extension '%s'"
             % (self._file_location, file_extension)
         )
+
+
+class EnvVarConfigLoader(ConfigLoader):
+    def load_configs(self) -> Dict[str, Any]:
+        return os.environ

@@ -1,9 +1,9 @@
 from discord.ext import commands
 
-from last_gas.adapters import LocalFileConfigLoader
+from last_gas.adapters import EnvVarConfigLoader
 from last_gas.domain.schedulers.time_scheduler import background_scheduler, SCHEDULES
 
-config_manager = LocalFileConfigLoader("configs/configs.yaml")
+config_manager = EnvVarConfigLoader()
 bot = commands.Bot(command_prefix="$")
 
 
@@ -20,4 +20,4 @@ if __name__ == "__main__":
                 **schedule["kwargs"],
             )
         )
-    bot.run(configs["token"])
+    bot.run(configs["TOKEN"])
