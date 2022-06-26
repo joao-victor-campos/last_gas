@@ -1,0 +1,53 @@
+# Config Files
+configs
+
+# OS stuff
+.DS_Store
+
+# Byte/Extensions
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Packaging stuff
+.Python
+env/
+build/
+develop-eggs/
+dist/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Tests
+htmlcov/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+data/
+metastore_db/
+derby.log
+spark-warehouse/
+
+# Docs
+
+_build/
+_static/
+_templates/
+
+# VSCode
+.vscode*/
