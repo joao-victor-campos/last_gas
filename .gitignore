@@ -51,3 +51,6 @@ _templates/
 
 # VSCode
 .vscode*/
+
+# env
+.python-version
