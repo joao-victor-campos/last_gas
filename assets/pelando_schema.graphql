@@ -1,0 +1,1682 @@
+directive @cacheControl(
+  maxAge: Int
+  scope: CacheControlScope
+  inheritMaxAge: Boolean
+) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
+# Exposes a URL that specifies the behaviour of this scalar.
+directive @specifiedBy(
+  # The URL that specifies the behaviour of this scalar.
+  url: String!
+) on SCALAR
+enum AgreementType {
+  PRIVACY_POLICY
+  TERMS_OF_SERVICE
+  CODE_OF_CONDUCT
+}
+
+type Alert {
+  id: ID!
+  rawKeyword: String!
+  createdAt: DateTime!
+}
+
+type AlertedOffer {
+  id: ID!
+  keyword: String!
+  offer: Offer!
+}
+
+type AlertedOfferConnection {
+  edges: [AlertedOffer!]!
+  pageInfo: PageInfo!
+}
+
+input alertInput {
+  rawKeyword: String!
+}
+
+type Ancestor {
+  id: ID!
+  title: String!
+}
+
+type AuthResult {
+  user: User!
+  token: String!
+}
+
+type BackofficeComment {
+  id: ID!
+  content: String!
+  likeCount: Int!
+  liked: Boolean!
+  status: CommentStatus!
+  timestamps: CommentTimestamps!
+  isEdited: Boolean!
+  # Comment that was replied to
+  replyTo: Comment
+  author: BackofficeUser!
+  offer: BackofficeOffer
+  totalReplies: Int!
+  lastFilterResults: FilterResults
+  deletionReasonIds: [ID!]
+  parentId: ID
+  deletionReasons: [DeletionReason!]
+}
+
+type BackofficeCommentConnection {
+  edges: [BackofficeComment!]!
+  pageInfo: PageInfo!
+  total: Int!
+}
+
+type BackofficeCommentReport {
+  id: ID!
+  status: ReportStatus!
+  commentReportReason: CommentReportReason!
+  comment: BackofficeComment!
+  user: BackofficeUser
+  filter: Filter
+}
+
+type BackofficeMutations {
+  # Updates existing offer given all the fields, except ones that should not be set
+  updateOfferWithUrl(
+    id: ID!
+    input: backofficeUpdateOfferWithUrlInput!
+  ): BackofficeOffer!
+  # Updates existing offer given all the fields, except ones that should not be set
+  updateOfferWithFile(
+    id: ID!
+    input: backofficeUpdateOfferWithFileInput!
+  ): BackofficeOffer!
+  updateOfferStatus(
+    id: ID!
+    input: backofficeUpdateOfferStatusInput!
+  ): BackofficeOffer!
+  updateOfferExpireLock(id: ID!, expireLock: Boolean!): BackofficeOffer!
+  updateOfferIsPicked(id: ID!, isPicked: Boolean!): BackofficeOffer!
+  updateOfferIsTracked(id: ID!, isTracked: Boolean!): BackofficeOffer!
+  updateOfferLockedComments(id: ID!, lockedComments: Boolean!): BackofficeOffer!
+  updateComment(id: ID!, input: updateCommentInput!): BackofficeComment!
+  createStore(input: createStoreInput!): BackofficeStore!
+  updateStore(storeId: ID!, update: updateStoreInput!): BackofficeStore!
+  updateUser(id: ID!, update: updateUserInput!): BackofficeUser!
+  createUserNote(userId: ID!, content: String!): Note!
+  createStoreNote(storeId: ID!, content: String!): Note!
+  createFilter(input: filterInput!): Filter!
+  deleteFilter(id: ID!): Boolean!
+  updateFilter(id: ID!, update: filterInput!): Filter!
+  createDeletionReason(input: deletionReasonInput!): DeletionReason!
+  updateDeletionReason(id: ID!, update: deletionReasonInput!): DeletionReason!
+  updateReport(id: ID!, input: updateReportInput!): BackofficeReport!
+  createUrlCleanupRule(input: urlCleanupRuleInput!): UrlCleanupRule!
+  updateUrlCleanupRule(id: ID!, update: urlCleanupRuleInput!): UrlCleanupRule!
+  deleteUrlCleanupRule(id: ID!): Boolean!
+  updateOfferProductId(id: ID!, productId: ID): BackofficeOffer!
+  # Creates a message to the chat received in the params
+  createChatMessage(input: ChatMessageInput!, chatId: ID!): ChatMessage!
+  # Close chat from received id
+  closeChat(chatId: ID!): Chat!
+  updateStoreRule(input: UpdateStoreRuleInput!): DeeplogRule!
+}
+
+type BackofficeOffer {
+  id: ID!
+  title: String!
+  kind: OfferKind!
+  status: OfferStatus!
+  sourceUrl: String
+  freeShipping: Boolean
+  isLocal: Boolean
+  temperature: Float!
+  price: Float
+  discountPercentage: Float
+  discountFixed: Float
+  couponCode: String
+  image: Media
+  content: String
+  store: Store
+  category: Category
+  isFirstOffer: Boolean!
+  isPicked: Boolean
+  isTracked: Boolean!
+  expireLock: Boolean
+  noIndex: Boolean!
+  commentCount: Int!
+  lockedComments: Boolean!
+  # The comment with most likes
+  featuredComment: Comment
+  # Most recent comment
+  lastComment: Comment
+  timestamps: OfferTimestamps!
+  productId: ID
+  lastFilterResults: FilterResults
+  duplicatedOffers: [BackofficeOffer!]!
+  user: BackofficeUser!
+  edits: [EditLogEntry!]!
+  categoriesIds: [ID!]!
+  deletionReasonIds: [ID!]
+  deletionReasons: [DeletionReason!]
+}
+
+type BackofficeOfferConnection {
+  edges: [BackofficeOffer!]!
+  pageInfo: PageInfo!
+  total: Int!
+}
+
+type BackofficeOfferReport {
+  id: ID!
+  status: ReportStatus!
+  offerReportReason: OfferReportReason!
+  offer: BackofficeOffer!
+  user: BackofficeUser
+  filter: Filter
+}
+
+type BackofficeOfferWithPageConnection {
+  edges: [BackofficeOffer!]!
+  pageInfo: OffsetBasedPaginationInfo!
+}
+
+type BackofficeQueries {
+  moderatedOffers(limit: Int, after: String): BackofficeOfferConnection!
+  autoDeletedOffers(limit: Int, after: String): BackofficeOfferConnection!
+  offer(id: ID!): BackofficeOffer!
+  # Return all deleted offers by Admins
+  adminDeletedOffers(limit: Int, after: String): BackofficeOfferConnection!
+  listScheduledOffers(
+    wasPublished: Boolean!
+    size: Int
+    page: Int
+  ): BackofficeOfferWithPageConnection!
+  # Main Categories list, Categories which do not have parent Category
+  categories: [Category!]!
+  moderatedComments(limit: Int, after: String): BackofficeCommentConnection!
+  autoDeletedComments(limit: Int, after: String): BackofficeCommentConnection!
+  # Return all deleted comments by Admin User sorted by decreasing deletedAt
+  adminDeletedComments(limit: Int, after: String): BackofficeCommentConnection!
+  # Given an optional search, gets the paginated stores sorted alphabetically. If search is not provided, return all
+  stores(
+    search: String
+    limit: Int
+    after: String
+    active: Boolean
+  ): BackofficeStoreConnection!
+  store(id: ID!): BackofficeStore!
+  user(id: ID!): BackofficeUser!
+  users(search: String, limit: Int, after: String): BackofficeUserConnection!
+  userOffers(userId: ID!, limit: Int, after: String): BackofficeOfferConnection!
+  userComments(
+    userId: ID!
+    limit: Int
+    after: String
+  ): BackofficeCommentConnection!
+  filter(id: ID!): Filter!
+  # Given a type and an optional search, gets the paginated custom filters sorted by decreasing createdAt.
+  filters(
+    type: FilterType!
+    search: String
+    limit: Int
+    after: String
+  ): FilterConnection
+  testFilter(rules: [filterRuleInput!]!, test: String!): Boolean!
+  deletionReasons: [DeletionReason!]!
+  reports(
+    type: ReportType!
+    limit: Int
+    after: String
+  ): BackofficeReportConnection!
+  urlCleanupRules: [UrlCleanupRule!]!
+  offersPendingProductAssignation(
+    limit: Int
+    after: String
+  ): OffersPendingProductAssignationConnection!
+  # Returns messages from the chat received in the params
+  chatMessages(chatId: ID!, limit: Int, after: String): ChatMessageConnection!
+  # Retuns chats from filters
+  chats(status: ChatStatus!, limit: Int, after: String): ChatConnection!
+  # Creates or returns existing chat
+  chat(userId: ID!): Chat!
+  getStores(search: String!): [DeeplogStore!]!
+  getStoreRules(storeId: Int!): DeeplogRule!
+  getNetworks: [DeeplogNetwork!]!
+}
+
+union BackofficeReport = BackofficeOfferReport | BackofficeCommentReport
+type BackofficeReportConnection {
+  edges: [BackofficeReport!]!
+  pageInfo: PageInfo!
+  total: Int!
+}
+
+# The backoffice representation of a Store
+type BackofficeStore {
+  id: ID!
+  name: String!
+  url: String!
+  slug: String!
+  image: Media!
+  status: StoreStatus!
+  top: Boolean
+  isModerated: Boolean!
+  seoContent: StoreSEOContent!
+  timestamps: StoreTimestamps!
+  edits: [EditLogEntry!]!
+  notes: [Note!]!
+}
+
+type BackofficeStoreConnection {
+  edges: [BackofficeStore!]!
+  pageInfo: PageInfo!
+  total: Int!
+}
+
+input backofficeUpdateOfferStatusInput {
+  status: UpdateOfferStatus!
+  deletionReasonIds: [ID!]
+  skipNotifications: Boolean
+}
+
+input backofficeUpdateOfferWithFileInput {
+  title: String!
+  kind: OfferKind!
+  categoryId: ID!
+  content: String
+  couponCode: String
+  discountFixed: Float
+  discountPercentage: Float
+  freeShipping: Boolean
+  isLocal: Boolean
+  price: Float
+  sourceUrl: String
+  publishAt: String
+  categoriesIds: [ID!]!
+  status: UpdateOfferStatus!
+  storeId: ID
+  productId: ID
+  imageFile: Upload!
+}
+
+input backofficeUpdateOfferWithUrlInput {
+  title: String!
+  kind: OfferKind!
+  categoryId: ID!
+  content: String
+  couponCode: String
+  discountFixed: Float
+  discountPercentage: Float
+  freeShipping: Boolean
+  isLocal: Boolean
+  price: Float
+  sourceUrl: String
+  publishAt: String
+  categoriesIds: [ID!]!
+  status: UpdateOfferStatus!
+  storeId: ID
+  productId: ID
+  imageUrl: String
+  imageId: ID
+}
+
+# TODO Organize timestamps in Object UserTimestamps
+type BackofficeUser {
+  id: ID!
+  nickname: String!
+  image: Media
+  createdAt: DateTime!
+  # Total of active and expired offers published by the User
+  totalOffers: Int!
+  # Total of active comments published by the User
+  totalComments: Int!
+  # Total of votes made by the user
+  totalVotes: Int!
+  # Total of alerts created by the user
+  totalAlerts: Int!
+  # Total of offers followed by the user
+  totalFollowedOffers: Int!
+  email: String!
+  updatedAt: DateTime!
+  edits: [EditLogEntry!]!
+  notes: [Note!]!
+  contentFilter: UserContentFilter
+  contentFilterExpiresAt: DateTime
+}
+
+type BackofficeUserConnection {
+  edges: [BackofficeUser!]!
+  pageInfo: PageInfo!
+  total: Int!
+}
+
+# The basic representation of a store, used in stores list
+type BasicStore {
+  name: String!
+  slug: String!
+}
+
+enum CacheControlScope {
+  PUBLIC
+  PRIVATE
+}
+
+# Represents a Category
+type Category {
+  id: ID!
+  title: String!
+  slug: ID!
+  ancestors: [Ancestor!]!
+  keywords: Keywords!
+  # If the category is a subcategory, this field is the category parent id
+  parent: ID
+}
+
+type Channel {
+  channel: ChannelType!
+  active: Boolean!
+}
+
+enum ChannelType {
+  EMAIL
+  BROWSER
+  APP
+  IN_APP
+}
+
+type Chat {
+  id: ID!
+  user: User!
+  status: ChatStatus!
+  lastMessage: ChatMessage
+  closedAt: DateTime
+  openAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type ChatConnection {
+  edges: [Chat!]!
+  pageInfo: PageInfo!
+  total: Int!
+}
+
+type ChatMessage {
+  id: ID!
+  chatId: ID!
+  sender: User!
+  content: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type ChatMessageConnection {
+  edges: [ChatMessage!]!
+  pageInfo: PageInfo!
+}
+
+input ChatMessageInput {
+  content: String!
+}
+
+enum ChatStatus {
+  OPEN
+  CLOSED
+  PENDING
+}
+
+type Comment {
+  id: ID!
+  content: String!
+  likeCount: Int!
+  liked: Boolean!
+  status: CommentStatus!
+  timestamps: CommentTimestamps!
+  isEdited: Boolean!
+  # Comment that was replied to
+  replyTo: Comment
+  author: User!
+  # The number of likes of the comment added to the number of likes of its replies
+  totalLikesCount: Int!
+  totalReplies: Int!
+  mostPopularReply: Reply
+  # The reply from a given reply ID, the first reply after lastVisitedAt or oldest reply if no param is sent
+  featuredReply(id: ID, lastVisitedAt: DateTime): Reply
+  # Temporary featured reply that returns pagination cursor, should replace featuredReply after schema is updated
+  featuredReplyWithPageInfo(
+    id: ID
+    lastVisitedAt: DateTime
+  ): FeaturedReplyConnection!
+  offer: Offer!
+  parentId: ID
+}
+
+type CommentConnection {
+  edges: [Comment!]!
+  pageInfo: PageInfo!
+}
+
+type CommentReport {
+  id: ID!
+  status: ReportStatus!
+  commentReportReason: CommentReportReason!
+}
+
+enum CommentReportReason {
+  SPAM_OR_OFFENSIVE
+  FOLLOW
+}
+
+enum CommentSortOptions {
+  FIRST_APPROVED_AT
+  LAST_INTERACTION_AT
+}
+
+enum CommentStatus {
+  ACTIVE
+  MODERATED
+  DELETED
+  PENDING
+}
+
+type CommentTimestamps {
+  createdAt: DateTime!
+  approvedAt: DateTime
+  updatedAt: DateTime!
+  moderatedAt: DateTime
+  firstApprovedAt: DateTime
+  lastInteractionAt: DateTime!
+}
+
+type CommentWithPageConnection {
+  edges: [Comment!]!
+  pageInfo: OffsetBasedPaginationInfo!
+}
+
+input createStoreInput {
+  name: String!
+  url: String!
+  imageFile: Upload!
+  seoVoucherH1Title: String
+  seoVoucherHtmlTitle: String
+  seoVoucherShortDescription: String
+  seoVoucherMetaDescription: String
+  seoVoucherFooterDescription: String
+  seoDealH1Title: String
+  seoDealHtmlTitle: String
+  seoDealShortDescription: String
+  seoDealMetaDescription: String
+  seoDealFooterDescription: String
+}
+
+input createUserInput {
+  email: String!
+  password: String!
+}
+
+type CurrentUser {
+  # Maximum temperature of active or expired user offers
+  maxTemperature: Float!
+  # Total of likes in user active comments and replies
+  totalCommentLikes: Int!
+  id: ID!
+  nickname: String!
+  image: Media
+  createdAt: DateTime!
+  # Total of active and expired offers published by the User
+  totalOffers: Int!
+  # Total of active comments published by the User
+  totalComments: Int!
+  # Total of votes made by the user
+  totalVotes: Int!
+  # Total of alerts created by the user
+  totalAlerts: Int!
+  # Total of offers followed by the user
+  totalFollowedOffers: Int!
+  isAdmin: Boolean!
+  # Returns the user's active and expired offers sorted by decreasing approvedAt
+  offers(limit: Int, after: String): OfferConnection!
+  # Returns user active comments
+  comments(limit: Int, after: String): CommentConnection!
+  # Temperature quantity added/removed on user vote
+  offerVoteValue: Float!
+  agreedWithPrivacyPolicy: Boolean!
+  status: UserStatus!
+  email: String!
+  isDev: Boolean
+}
+
+enum DatePeriod {
+  TODAY
+  WEEK
+  MONTH
+}
+
+# A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the
+# `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO
+# 8601 standard for representation of dates and times using the Gregorian calendar.
+scalar DateTime
+
+type DeeplogNetwork {
+  id: Int!
+  name: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  status: String!
+}
+
+type DeeplogRule {
+  storeId: Int!
+  startDate: DateTime!
+  rules: [Rule!]!
+  directParams: String
+  directExpression: String
+}
+
+type DeeplogStore {
+  id: Int!
+  name: String!
+  domain: String!
+}
+
+type DeletionReason {
+  id: ID!
+  title: String!
+  link: String!
+  bannerTitle: String
+  description: String
+  chatMacro: String
+}
+
+input deletionReasonInput {
+  title: String!
+  link: String!
+  bannerTitle: String
+  description: String
+  chatMacro: String
+}
+
+type Device {
+  id: ID!
+  fcmToken: String!
+  type: DeviceType!
+}
+
+input deviceInput {
+  fcmToken: String!
+  type: DeviceType!
+}
+
+enum DeviceType {
+  BROWSER
+  APP
+}
+
+type EditLogEntry {
+  id: ID!
+  editorName: String!
+  timestamp: DateTime!
+  property: String!
+  changedFrom: String
+  changedTo: String
+}
+
+type FeaturedReplyConnection {
+  data: Reply
+  pageInfo: PageInfo
+}
+
+type File {
+  filename: String!
+  mimetype: String!
+  encoding: String!
+}
+
+# The backoffice representation of a Filter
+type Filter {
+  id: ID!
+  type: FilterType!
+  action: FilterAction!
+  scope: FilterScope!
+  deletionReasonId: ID
+  keywordScopes: FilterKeywordScopes
+  note: String
+  rules: [FilterRule!]!
+  timestamps: FilterTimestamps!
+}
+
+enum FilterAction {
+  # On filter match, send content to moderation
+  MODERATE
+  # On filter match, auto delete (i.e. ignore) content
+  BAN
+  # On filter match, the content is activated but a report will be created
+  REPORT
+}
+
+type FilterConnection {
+  edges: [Filter!]!
+  pageInfo: PageInfo!
+  total: Int!
+}
+
+input filterInput {
+  type: FilterType!
+  action: FilterAction!
+  scope: FilterScope!
+  keywordScopes: filterKeywordScopesInput
+  note: String
+  rules: [filterRuleInput!]!
+  deletionReasonId: ID
+}
+
+type FilterKeywordScopes {
+  offerTitle: Boolean!
+  offerContent: Boolean!
+  commentContent: Boolean!
+  offerCoupon: Boolean
+}
+
+input filterKeywordScopesInput {
+  offerTitle: Boolean!
+  offerContent: Boolean!
+  commentContent: Boolean!
+  offerCoupon: Boolean!
+}
+
+enum FilterResult {
+  APPROVED
+  BANNED
+  MODERATED
+  REPORTED
+}
+
+type FilterResults {
+  result: FilterResult!
+  rejectedFilters: [RejectedFilter!]!
+  appliedAt: DateTime!
+}
+
+type FilterRule {
+  text: String!
+  type: FilterRuleType!
+}
+
+input filterRuleInput {
+  text: String!
+  type: FilterRuleType!
+}
+
+enum FilterRuleType {
+  CONTAINS
+  CONTAINS_WORD
+  WORD_STARTS_WITH
+  WORD_ENDS_WITH
+}
+
+enum FilterScope {
+  ALL
+  OFFERS
+  COMMENTS
+}
+
+type FilterTimestamps {
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum FilterType {
+  USER_EMAIL
+  URL
+  KEYWORD
+}
+
+type FollowedOfferConnection {
+  edges: [FollowedOfferInfo!]!
+  pageInfo: PageInfo!
+}
+
+type FollowedOfferInfo {
+  id: ID!
+  notificationsEnabled: Boolean!
+  offer: Offer!
+}
+
+input FollowedOfferInput {
+  notificationsEnabled: Boolean!
+}
+
+type Keywords {
+  whitelist: [String!]!
+  blacklist: [String!]!
+}
+
+input loginUserInput {
+  email: String!
+  password: String!
+}
+
+type Media {
+  id: ID!
+  # The optional width and height parameters resize the image, limited to
+  # 2000x2000. In case they are not informed, the image is returned in its
+  # original size. If you omit one of the dimensions or use zero as a value (as in
+  # 300x, 300x0, x200, 0x200, and so on), Thumbor will determine that dimension as
+  # to be proportional to the original image.
+  url(width: Int, height: Int): String!
+}
+
+type Mutation {
+  backoffice: BackofficeMutations!
+  public: PublicMutations!
+  me: PrivateUserMutations!
+}
+
+type Note {
+  id: ID!
+  timestamps: NoteTimestamps!
+  creator: User!
+  content: String!
+  entityId: ID!
+}
+
+type NoteTimestamps {
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Notification {
+  id: ID!
+  text: String!
+  offer: Offer
+  link: String
+  status: NotificationStatus!
+  createdAt: DateTime!
+}
+
+type NotificationConnection {
+  edges: [Notification!]!
+  pageInfo: PageInfo!
+}
+
+type NotificationPreference {
+  id: ID!
+  types: [Types!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum NotificationStatus {
+  NEW
+  READ
+}
+
+enum NotificationType {
+  OFFER_ALERT
+  TRANSACTIONAL
+  MODERATION
+  TREND_RECOMMENDATION
+  FOLLOWED_OFFER
+  MARKETING
+}
+
+type Offer {
+  id: ID!
+  title: String!
+  kind: OfferKind!
+  status: OfferStatus!
+  sourceUrl: String
+  freeShipping: Boolean
+  isLocal: Boolean
+  temperature: Float!
+  price: Float
+  discountPercentage: Float
+  discountFixed: Float
+  couponCode: String
+  image: Media
+  content: String
+  store: Store
+  category: Category
+  isFirstOffer: Boolean!
+  isPicked: Boolean
+  isTracked: Boolean!
+  expireLock: Boolean
+  noIndex: Boolean!
+  commentCount: Int!
+  lockedComments: Boolean!
+  # The comment with most likes
+  featuredComment: Comment
+  # Most recent comment
+  lastComment: Comment
+  timestamps: OfferTimestamps!
+  productId: ID
+  user: User!
+  tip: Tip
+  deletionReasons: [DeletionReason!]
+}
+
+type OfferConnection {
+  edges: [Offer!]!
+  pageInfo: PageInfo!
+}
+
+type OfferFeedFilters {
+  status: OfferStatus
+  hottestFeedPeriod: DatePeriod
+  sortBy: OfferSortOption
+}
+
+input OfferFeedFiltersInput {
+  status: OfferStatus
+  hottestFeedPeriod: DatePeriod
+  sortBy: OfferSortOption
+}
+
+input OfferFilterOptions {
+  status: OfferStatus
+}
+
+enum OfferKind {
+  PROMOTION
+  COUPON
+}
+
+type OfferReport {
+  id: ID!
+  status: ReportStatus!
+  offerReportReason: OfferReportReason!
+}
+
+enum OfferReportReason {
+  SPAM_OR_OFFENSIVE
+  EXPIRED
+  FOLLOW
+  DUPLICATED
+  NOT_PROMOTION
+}
+
+input offersForProductInput {
+  productId: ID!
+}
+
+enum OfferSortOption {
+  CREATED_AT
+  TEMPERATURE
+  COMMENT
+}
+
+type OffersPendingProductAssignationConnection {
+  edges: [BackofficeOffer!]!
+  pageInfo: PageInfo!
+}
+
+enum OfferStatus {
+  ACTIVE
+  PENDING
+  MODERATED
+  EXPIRED
+  DELETED
+  SCHEDULED
+}
+
+type OfferTimestamps {
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  approvedAt: DateTime
+  moderatedAt: DateTime
+  pickedAt: DateTime
+  hotAt: DateTime
+  firstApprovedAt: DateTime
+  lastCommentedAt: DateTime
+  publishAt: DateTime
+  scheduledAt: DateTime
+}
+
+type OfferVoteInfo {
+  id: ID!
+  voted: Boolean!
+  # Defined when voted is true
+  kind: VoteKind
+}
+
+type OffsetBasedPaginationInfo {
+  total: Int!
+  totalPages: Int!
+  page: Int!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  pageSize: Int!
+  endCursor: String
+  startCursor: String
+}
+
+input pkceLoginInput {
+  codeVerifier: String!
+}
+
+type PredictedCategory {
+  id: ID!
+  title: String!
+}
+
+type PrivateComment {
+  id: ID!
+  content: String!
+  likeCount: Int!
+  liked: Boolean!
+  status: CommentStatus!
+  timestamps: CommentTimestamps!
+  isEdited: Boolean!
+  # Comment that was replied to
+  replyTo: Comment
+  author: User!
+  # The number of likes of the comment added to the number of likes of its replies
+  totalLikesCount: Int!
+  totalReplies: Int!
+  offer: Offer!
+  parentId: ID
+  deletionReasons: [DeletionReason!]
+}
+
+type PrivateUserMutations {
+  # Make a user logout, returns true if the user exist, otherwise returns an AuthenticationError
+  logout: Boolean!
+  singleUpload(input: singleUploadInput!): Media!
+  submit(input: submitWithUrlInput!): Offer!
+  submitWithFile(input: submitWithFileInput!): Offer!
+  updateOffer(id: ID!, input: UpdateOfferWithUrlInput!): Offer!
+  updateOfferWithFile(id: ID!, input: UpdateOfferWithFileInput!): Offer!
+  # Deprecated. Use vote instead
+  voteUp(id: ID!, kind: VoteKind): Offer!
+  # Deprecated. Use removeVote instead
+  voteDown(id: ID!): Offer!
+  # Increase or decrease Offer temperature, depending on the kind given
+  vote(id: ID!, kind: VoteKind!): Offer!
+  # Remove user given vote, of any kind
+  removeVote(id: ID!): Offer!
+  deleteOffer(id: ID!): Boolean!
+  expireOffer(id: ID!): Offer!
+  sendOfferToTelegram(id: ID!): Boolean!
+  updateLastVisited(offerId: ID!): DateTime!
+  followOffer(offerId: ID!): FollowedOfferInfo!
+  unfollowOffer(offerId: ID!): Boolean!
+  updateFollowedOffer(
+    offerId: ID!
+    input: FollowedOfferInput!
+  ): FollowedOfferInfo!
+  # Create a new Comment
+  comment(content: String!, offerId: ID!): Comment!
+  # Create a new Reply
+  reply(content: String!, offerId: ID!, parentId: ID!, replyTo: ID): Reply!
+  # Create new Reply with Comment return
+  replyAsComment(
+    content: String!
+    offerId: ID!
+    parentId: ID!
+    replyTo: ID
+  ): Comment!
+  # Adds a like to the Comment if the authenticated user hasn't liked it yet
+  likeComment(id: ID!): Comment!
+  # Adds a like to the Reply if the authenticated user hasn't liked it yet
+  likeReply(id: ID!, parentId: ID!): Reply!
+  # Removes a like previously given to the Comment
+  dislikeComment(id: ID!): Comment!
+  # Removes a like previously given to the Reply
+  dislikeReply(id: ID!, parentId: ID!): Reply!
+  editComment(id: ID!, content: String!): Comment!
+  editReply(id: ID!, content: String!): Reply!
+  deleteComment(id: ID!): Boolean!
+  # Give a numeric rating to a Store, from 1 to 5
+  rateStore(input: rateStoreInput!): StoreRating!
+  # Remove given rating
+  removeStoreRating(input: removeStoreRatingInput!): StoreRating!
+  # Update authenticated user email
+  updateEmail(input: updateEmailInput!): User!
+  # Update authenticated user profile
+  updateUserProfile(input: updateUserProfileInput!): User!
+  # Requests a new email confirmation email
+  requestEmailConfirmationEmail: Boolean!
+  # Send user's metadata to backend
+  updateSignupMetadata(meta: String!): Boolean!
+  # Starts the account deletion process
+  requestAccountDeletion: Boolean!
+  # Subscribe a user device with the provided token to receive notifications
+  subscribeDevice(device: deviceInput!): Device!
+  readAllNotifications: Boolean!
+  readNotification(id: ID!): Notification!
+  updateNotificationPreference(
+    input: updateNotificationPreferenceInput
+  ): NotificationPreference!
+  # Create a new alert for the logged in user
+  createAlert(alert: alertInput!): Alert!
+  # Delete an existing alert for the logged in user
+  deleteAlert(alertId: ID!): Boolean!
+  reportOffer(offerId: ID!, reportReason: OfferReportReason!): OfferReport!
+  reportComment(
+    commentId: ID!
+    reportReason: CommentReportReason!
+  ): CommentReport!
+  agreeWithPrivacyPolicyTerms: CurrentUser!
+  updateUserFilterPreference(
+    input: UserFilterPreferenceInput!
+  ): UserFilterPreference!
+  # Creates message to the logged user chat
+  createChatMessage(input: ChatMessageInput!): ChatMessage!
+}
+
+type PrivateUserQueries {
+  # Given a list of offer IDs, return a list with the same IDs and whether the user voted on each offer
+  offerVotes(offerIds: [ID!]!): [OfferVoteInfo!]!
+  # Given an offer ID, returns the last time the logged user has visited this offer
+  userLastVisitedAt(offerId: ID!): DateTime
+  # Returns the offers that triggered alerts for the logged user
+  alertOffers(
+    limit: Int
+    after: String
+    filters: OfferFilterOptions
+  ): AlertedOfferConnection!
+  followedOffers(limit: Int, after: String): FollowedOfferConnection!
+  # Checks if a user follows an offer
+  offerIsFollowed(offerId: ID!): FollowedOfferInfo
+  # The private user Comment and Reply list from an Offer given its offerId
+  privateCommentsAndReplies(offerId: ID!): [PrivateComment!]!
+  # Given an storeId, return the user rating for that store if available
+  getStoreRating(id: ID!): StoreRating!
+  getUserInfo: CurrentUser!
+  notifications(limit: Int, after: String): NotificationConnection!
+  newNotificationsCount: Int!
+  notificationPreference: NotificationPreference!
+  # Get all active alerts created by the logged in user
+  alerts: [Alert!]!
+  # Returns all user filter preferences on offers feeds
+  userFilterPreferences: UserFilterPreference
+  # Returns messages from logged user chat
+  chatMessages(limit: Int, after: String): ChatMessageConnection!
+}
+
+type Product {
+  id: ID!
+  title: String!
+  category: String!
+  price: String
+  imageUrl: String
+  productUrl: String
+}
+
+# Represents the crawled product resources
+type ProductResource {
+  title: String
+  images: [String!]
+  price: Float
+  currency: String
+  store: Store
+  category: PredictedCategory
+}
+
+type PublicMutations {
+  # Creates a user
+  signup(input: createUserInput!): AuthResult!
+  # Make a user login. The user should already exist
+  login(input: loginUserInput!): AuthResult!
+  # Use a codeVerifier as input to login the user under the PKCE flow
+  authenticateWithCodeVerifier(input: pkceLoginInput!): AuthResult!
+  # Requests a password reset for the given email address
+  requestPasswordReset(input: requestPasswordResetInput!): Boolean!
+  # Given a valid resetPassword token and valid password, updates the user's password
+  updatePassword(input: updatePasswordInput!): User!
+  # Confirms the user intent to delete their account given a valid token
+  confirmAccountDeletion(token: String!): Boolean!
+  agreeWithCookiesTerms: Boolean!
+}
+
+type PublicQueries {
+  offers(
+    categorySlug: String!
+    limit: Int
+    after: String
+    filters: OfferFilterOptions
+    sortBy: OfferSortOption
+  ): OfferConnection!
+  offer(id: ID!): Offer!
+  # The hottest offers and coupons for the hottest widget
+  hottestOffers(categorySlug: String, storeId: ID): [Offer!]!
+  searchOffers(
+    query: String
+    limit: Int
+    after: String
+    filters: OfferFilterOptions
+    sortBy: OfferSortOption
+  ): OfferConnection!
+  # The featured offers feed. Offers are sorted by the date they were picked
+  featuredOffers(limit: Int, after: String): OfferConnection!
+  # The hottest offers feed. Offers are sorted by temperature with optional minDate filter
+  hottestOffersFeed(
+    limit: Int
+    after: String
+    minDate: DateTime
+    filters: OfferFilterOptions
+  ): OfferConnection!
+  # Get up to 8 most frequent daily user searches from Google Analytics
+  mostFrequentSearches: [String!]!
+  recentOffers(
+    limit: Int
+    after: String
+    filters: OfferFilterOptions
+  ): OfferConnection!
+  # Offers sorted by last comment
+  commentedOffers(
+    limit: Int
+    after: String
+    filters: OfferFilterOptions
+  ): OfferConnection!
+  # All Categories list if includeSubcategories is true. Only Main Categories, otherwise
+  categories(includeSubcategories: Boolean): [Category!]!
+  # Main Categories list, Categories which do not have parent Category
+  mainCategories: [Category!]!
+  # Get a Category by its ID
+  categoryById(id: ID!): Category!
+  # Get a Category by its slug
+  categoryBySlug(slug: String!): Category!
+  # The Comment list from an Offer given its offerId
+  comments(
+    offerId: ID!
+    limit: Int
+    after: String
+    sortBy: CommentSortOptions
+  ): CommentConnection!
+  # The Comment from a given id
+  comment(id: ID!): Comment!
+  # The Reply list from an Comment given its commentId, represented by parentId
+  replies(
+    parentId: ID!
+    limit: Int
+    after: String
+    before: String
+  ): ReplyConnection!
+  # The Comments with most likes from the offer
+  topComments(offerId: ID!): [Comment!]!
+  # Comment list from and offerId paginating with limited pages, use anchorCommentId to navigate direct to an comment page
+  commentsAndReplies(
+    offerId: ID!
+    size: Int
+    page: Int
+    anchorCommentId: ID
+  ): CommentWithPageConnection!
+  # The Comments and replies with most likes from the offer
+  topCommentsAndReplies(offerId: ID!): [Comment!]!
+  # Returns the product resources of the given url
+  crawler(url: String!): ProductResource!
+  # Given an ID, get all coupons from that Store
+  storeCoupons(id: ID!, isExpired: Boolean!): StoreCoupons!
+  # Given an ID, get active promotions from that Store. If Store has no active promotions, returns expired promotions.
+  storePromotions(storeId: ID!, limit: Int, after: String): OfferConnection!
+  # Given an ID, get the related Store
+  store(id: ID!): Store!
+  # Given an URL, get the related Store
+  storeByUrl(url: String!): Store!
+  # Given a slug, get the related Store
+  storeBySlug(slug: String!): Store!
+  # Get all Top Store, given a combination of these two arguments
+  topStores(storeId: ID, categoryId: ID): [Store!]!
+  # List all active stores
+  stores: [BasicStore!]!
+  # Given a search string, get a list of matching store suggestions
+  storeSuggestions(search: String!): [StoreSuggestion!]!
+  user(id: ID!): User!
+  # Find user by nickname as an alternative where the ID is not available (e.g. user profile)
+  userByNickname(nickname: String!): User!
+  # Given a email associated to an user, returns a list of auth providers from that user
+  authProviders(email: String!): [String!]!
+  agreementByType(agreementType: AgreementType!): String!
+  searchProducts(input: searchProductsInput!): SearchProductsConnection!
+  zoomOffers(input: zoomOffersInput!): ZoomOffersConnection!
+  offersForProduct(input: offersForProductInput!): [Offer!]!
+}
+
+type Query {
+  backoffice: BackofficeQueries!
+  public: PublicQueries!
+  me: PrivateUserQueries!
+}
+
+input rateStoreInput {
+  slug: String!
+  rating: Int!
+}
+
+# It contains total ratings and average rating of all ratings
+type Rating {
+  ratingMean: Float!
+  ratingCount: Int!
+}
+
+enum ReferrerType {
+  OFFER_DESCRIPTION
+  COMMENT_CONTENT
+}
+
+type RejectedFilter {
+  reason: RejectedFilterReason!
+  type: RejectedFilterType!
+}
+
+type RejectedFilterReason {
+  message: String!
+}
+
+enum RejectedFilterType {
+  USER_EMAIL
+  URL
+  KEYWORD
+  UNKNOWN_STORE
+  DUPLICATED_DEAL
+  DUPLICATED_COUPON
+  MISSING_IMAGE
+  STORE
+  USER
+}
+
+input removeStoreRatingInput {
+  slug: String!
+}
+
+type Reply {
+  id: ID!
+  content: String!
+  likeCount: Int!
+  liked: Boolean!
+  status: CommentStatus!
+  timestamps: CommentTimestamps!
+  isEdited: Boolean!
+  # Comment that was replied to
+  replyTo: Comment
+  author: User!
+  parentId: ID!
+  offer: Offer!
+}
+
+type ReplyConnection {
+  edges: [Reply!]!
+  pageInfo: PageInfo!
+}
+
+enum ReportStatus {
+  PENDING
+  APPROVED
+  IGNORED
+  AUTO_IGNORED
+}
+
+enum ReportType {
+  OFFER
+  COMMENT
+}
+
+input requestPasswordResetInput {
+  email: String!
+}
+
+type Rule {
+  networkId: Int!
+  orderPriority: Int!
+}
+
+input RuleInput {
+  networkId: Int!
+  orderPriority: Int!
+}
+
+type SearchProductsConnection {
+  edges: [Product!]!
+}
+
+input searchProductsInput {
+  query: String!
+}
+
+type SEOContent {
+  h1Title: String!
+  htmlTitle: String!
+  shortDescription: String!
+  footerDescription: String!
+  metaDescription: String!
+}
+
+input singleUploadInput {
+  file: Upload!
+  referrerType: ReferrerType!
+}
+
+# The public representation of a Store
+type Store {
+  id: ID!
+  name: String!
+  url: String!
+  slug: String!
+  image: Media!
+  status: StoreStatus!
+  top: Boolean
+  isModerated: Boolean!
+  seoContent: StoreSEOContent!
+  timestamps: StoreTimestamps!
+  ratingInfo: Rating!
+  couponsCount: Int!
+  offersCount: Int!
+}
+
+type StoreCoupons {
+  store: Store!
+  coupons: [Offer!]!
+}
+
+# The return type of all operations related to rating
+type StoreRating {
+  userStoreRating: UserStoreRating!
+  store: Store!
+}
+
+type StoreSEOContent {
+  deal: SEOContent!
+  coupon: SEOContent!
+}
+
+enum StoreStatus {
+  ACTIVE
+  DEACTIVE
+  MERGED
+}
+
+enum StoreStatusUpdate {
+  ACTIVATE
+  DEACTIVATE
+}
+
+# The return type of store suggestion used on the autocomplete search
+type StoreSuggestion {
+  name: String!
+  slug: String!
+}
+
+type StoreTimestamps {
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input submitWithFileInput {
+  title: String!
+  kind: OfferKind!
+  categoryId: ID!
+  content: String
+  couponCode: String
+  discountFixed: Float
+  discountPercentage: Float
+  freeShipping: Boolean
+  isLocal: Boolean
+  price: Float
+  sourceUrl: String
+  publishAt: String
+  imageFile: Upload!
+}
+
+input submitWithUrlInput {
+  title: String!
+  kind: OfferKind!
+  categoryId: ID!
+  content: String
+  couponCode: String
+  discountFixed: Float
+  discountPercentage: Float
+  freeShipping: Boolean
+  isLocal: Boolean
+  price: Float
+  sourceUrl: String
+  publishAt: String
+  imageUrl: String
+}
+
+type Tip {
+  id: ID!
+  title: String!
+  description: String!
+  # The optional width and height parameters resize the image, limited to
+  # 2000x2000. In case they are not informed, the image is returned in its
+  # original size. If you omit one of the dimensions or use zero as a value (as in
+  # 300x, 300x0, x200, 0x200, and so on), will determine that dimension as to be
+  # proportional to the original image.
+  iconUrl(width: Int, height: Int): String!
+}
+
+type Types {
+  type: NotificationType!
+  channels: [Channel!]!
+}
+
+input updateCommentInput {
+  status: UpdateCommentStatus!
+  deletionReasonIds: [ID!]
+}
+
+enum UpdateCommentStatus {
+  ACTIVE
+  MODERATED
+  DELETED
+}
+
+input updateEmailInput {
+  email: String!
+}
+
+input updateNotificationPreferenceInput {
+  type: NotificationType!
+  channel: ChannelType!
+  active: Boolean!
+}
+
+enum UpdateOfferStatus {
+  ACTIVE
+  MODERATED
+  DELETED
+  EXPIRED
+  SCHEDULED
+}
+
+input UpdateOfferWithFileInput {
+  title: String!
+  kind: OfferKind!
+  categoryId: ID!
+  content: String
+  couponCode: String
+  discountFixed: Float
+  discountPercentage: Float
+  freeShipping: Boolean
+  isLocal: Boolean
+  price: Float
+  sourceUrl: String
+  publishAt: String
+  imageFile: Upload!
+}
+
+input UpdateOfferWithUrlInput {
+  title: String!
+  kind: OfferKind!
+  categoryId: ID!
+  content: String
+  couponCode: String
+  discountFixed: Float
+  discountPercentage: Float
+  freeShipping: Boolean
+  isLocal: Boolean
+  price: Float
+  sourceUrl: String
+  publishAt: String
+  imageUrl: String
+}
+
+input updatePasswordInput {
+  token: String!
+  password: String!
+}
+
+input updateReportInput {
+  status: UpdateReportStatus!
+}
+
+enum UpdateReportStatus {
+  APPROVED
+  IGNORED
+}
+
+input updateStoreInput {
+  status: StoreStatusUpdate
+  url: String
+  imageFile: Upload
+  isModerated: Boolean
+  seoVoucherH1Title: String
+  seoVoucherHtmlTitle: String
+  seoVoucherShortDescription: String
+  seoVoucherMetaDescription: String
+  seoVoucherFooterDescription: String
+  seoDealH1Title: String
+  seoDealHtmlTitle: String
+  seoDealShortDescription: String
+  seoDealMetaDescription: String
+  seoDealFooterDescription: String
+}
+
+input UpdateStoreRuleInput {
+  storeId: Int!
+  rules: [RuleInput!]!
+  directParams: String
+  directExpression: String
+}
+
+input updateUserInput {
+  # If contentFilter is passed but contentFilterExpiresAt isn't, the expiration is disabled
+  contentFilter: UserContentFilter
+  contentFilterExpiresAt: DateTime
+}
+
+input updateUserProfileInput {
+  nickname: String
+  image: Upload
+}
+
+scalar Upload
+
+type UrlCleanupRule {
+  id: ID!
+  domain: String!
+  excludedParameters: [String!]!
+  excludedSubdomains: [String!]!
+  timestamps: UrlCleanupRuleTimestamps!
+}
+
+input urlCleanupRuleInput {
+  domain: String!
+  excludedParameters: [String!]!
+  excludedSubdomains: [String!]!
+}
+
+type UrlCleanupRuleTimestamps {
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type User {
+  # Maximum temperature of active or expired user offers
+  maxTemperature: Float!
+  # Total of likes in user active comments and replies
+  totalCommentLikes: Int!
+  id: ID!
+  nickname: String!
+  image: Media
+  createdAt: DateTime!
+  # Total of active and expired offers published by the User
+  totalOffers: Int!
+  # Total of active comments published by the User
+  totalComments: Int!
+  # Total of votes made by the user
+  totalVotes: Int!
+  # Total of alerts created by the user
+  totalAlerts: Int!
+  # Total of offers followed by the user
+  totalFollowedOffers: Int!
+  isAdmin: Boolean!
+  # Returns the user's active and expired offers sorted by decreasing approvedAt
+  offers(limit: Int, after: String): OfferConnection!
+  # Returns user active comments
+  comments(limit: Int, after: String): CommentConnection!
+  # Temperature quantity added/removed on user vote
+  offerVoteValue: Float!
+  agreedWithPrivacyPolicy: Boolean!
+  status: UserStatus!
+}
+
+enum UserContentFilter {
+  DISABLED
+  MODERATE_COMMENTS
+  MODERATE_OFFERS
+  MODERATE_ALL
+  IGNORE_ALL
+}
+
+type UserFilterPreference {
+  id: ID!
+  preferences: OfferFeedFilters
+}
+
+input UserFilterPreferenceInput {
+  preferences: OfferFeedFiltersInput!
+}
+
+enum UserStatus {
+  ACTIVE
+  BANNED
+  DELETED
+  PENDING_DELETE
+}
+
+# The representation of the rating given by an user
+type UserStoreRating {
+  id: ID!
+  rating: Int!
+}
+
+enum VoteKind {
+  INCREASE
+  DECREASE
+}
+
+type ZoomOfferItem {
+  id: ID!
+  categoryId: String
+  currency: String
+  description: String
+  imageURL: String
+  name: String
+  price: String
+  storeId: String
+  storeLogoURL: String
+  storeName: String
+  url: String
+}
+
+type ZoomOffersConnection {
+  id: ID!
+  name: String
+  url: String
+  imageUrl: String
+  countOffers: Int
+  priceMin: String
+  priceMax: String
+  priceAvg: String
+  edges: [ZoomOfferItem!]
+}
+
+input zoomOffersInput {
+  productId: ID!
+}
+
