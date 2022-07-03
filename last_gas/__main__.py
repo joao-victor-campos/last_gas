@@ -18,7 +18,7 @@ async def promos(ctx, *search):
     usage: $promos search string [-limit of results]
 
     :param ctx: context object
-    """    
+    """
     if re.match(r"^\-[0-9]+", search[-1]):
         limit = int(search[-1][1:])
         search = search[:-1]
