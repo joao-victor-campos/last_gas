@@ -63,7 +63,7 @@ async def sad_mondays(bot: Any, channel_id: str) -> None:
 
     await bot.wait_until_ready()
     channel = bot.get_channel(channel_id)
-    await channel.send(file=discord.File("assets/images/john_kleber_mondays.jpeg"))
+    await channel.send(file=discord.File("assets/images/john_kleber_monday.jpeg"))
 
 
 SCHEDULES = [
