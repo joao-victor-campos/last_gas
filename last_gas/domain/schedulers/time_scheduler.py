@@ -1,5 +1,6 @@
 import asyncio
 from datetime import datetime, timedelta
+import discord
 from typing import Any, Callable
 
 from last_gas.domain.constants import CHANNEL_IDS
@@ -52,6 +53,19 @@ async def last_gas(bot: Any, channel_id: str) -> None:
     await channel.send(LINKS["last_gas"])
 
 
+async def sad_mondays(bot: Any, channel_id: str) -> None:
+    """Sends the "John Kleber can't handle mondays" meme link to the channel
+
+    Args:
+        bot (Any): Discord bot
+        channel_id (str): Channel id to send the message
+    """
+
+    await bot.wait_until_ready()
+    channel = bot.get_channel(channel_id)
+    await channel.send(file=discord.File("assets/images/john_kleber_mondays.jpeg"))
+
+
 SCHEDULES = [
     {
         "timed_func": last_gas,
@@ -61,5 +75,14 @@ SCHEDULES = [
         "kwargs": {
             "channel_id": CHANNEL_IDS["geralt"],
         },
-    }
+    },
+    {
+        "timed_func": sad_mondays,
+        "day_of_week": 0,
+        "time_of_day": "09:00:00",
+        "args": [],
+        "kwargs": {
+            "channel_id": CHANNEL_IDS["geralt"],
+        },
+    },
 ]
