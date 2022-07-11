@@ -67,7 +67,8 @@ async def sad_mondays(bot: Any, channel_id: str) -> None:
 
 
 async def ximira_xelo(bot: Any, channel_id: str) -> None:
-    """Sends the "Ximira wants to stop working at 4pm on a Wednesday" meme link to the channel
+    """Sends the "Ximira wants to stop working at 4pm on a Wednesday"
+    meme link to the channel
 
     Args:
         bot (Any): Discord bot
