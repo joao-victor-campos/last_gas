@@ -66,6 +66,20 @@ async def sad_mondays(bot: Any, channel_id: str) -> None:
     await channel.send(file=discord.File("assets/images/john_kleber_monday.jpeg"))
 
 
+async def ximira_xelo(bot: Any, channel_id: str) -> None:
+    """Sends the "Ximira wants to stop working at 4pm on a Wednesday"
+    meme link to the channel
+
+    Args:
+        bot (Any): Discord bot
+        channel_id (str): Channel id to send the message
+    """
+
+    await bot.wait_until_ready()
+    channel = bot.get_channel(channel_id)
+    await channel.send(LINKS["ximira_xelo"])
+
+
 SCHEDULES = [
     {
         "timed_func": last_gas,
@@ -80,6 +94,15 @@ SCHEDULES = [
         "timed_func": sad_mondays,
         "day_of_week": 0,
         "time_of_day": "09:00:00",
+        "args": [],
+        "kwargs": {
+            "channel_id": CHANNEL_IDS["geralt"],
+        },
+    },
+    {
+        "timed_func": ximira_xelo,
+        "day_of_week": 2,
+        "time_of_day": "16:00:00",
         "args": [],
         "kwargs": {
             "channel_id": CHANNEL_IDS["geralt"],
