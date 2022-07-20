@@ -51,7 +51,7 @@ async def send_link(bot: Any, channel_id: str, link_name: str) -> None:
 
     await bot.wait_until_ready()
     channel = bot.get_channel(channel_id)
-    await channel.send(LINKS["link_name"])
+    await channel.send(LINKS[link_name])
 
 
 async def send_file(bot: Any, channel_id: str, file_path: str) -> None:
@@ -86,7 +86,7 @@ SCHEDULES = [
         "args": [],
         "kwargs": {
             "channel_id": CHANNEL_IDS["geralt"],
-            "file_path": "assets/images/john_kleber_monday.jpeg"
+            "file_path": "assets/images/john_kleber_monday.jpeg",
         },
     },
     {
