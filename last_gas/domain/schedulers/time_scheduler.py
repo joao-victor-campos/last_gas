@@ -40,72 +40,83 @@ async def background_scheduler(
         await asyncio.sleep(60 * 60)
 
 
-async def last_gas(bot: Any, channel_id: str) -> None:
-    """Sends the "last gas" meme link to the channel
+async def send_link(bot: Any, channel_id: str, link_name: str) -> None:
+    """Sends a link to to a channel
 
     Args:
         bot (Any): Discord bot
         channel_id (str): Channel id to send the message
+        link_name (str): The key for the link in LINKS
     """
 
     await bot.wait_until_ready()
     channel = bot.get_channel(channel_id)
-    await channel.send(LINKS["last_gas"])
+    await channel.send(LINKS[link_name])
 
 
-async def sad_mondays(bot: Any, channel_id: str) -> None:
-    """Sends the "John Kleber can't handle mondays" meme link to the channel
+async def send_file(bot: Any, channel_id: str, file_path: str) -> None:
+    """Sends a file to a channel
 
     Args:
         bot (Any): Discord bot
         channel_id (str): Channel id to send the message
+        file_path (str): Path to file
     """
 
     await bot.wait_until_ready()
     channel = bot.get_channel(channel_id)
-    await channel.send(file=discord.File("assets/images/john_kleber_monday.jpeg"))
-
-
-async def ximira_xelo(bot: Any, channel_id: str) -> None:
-    """Sends the "Ximira wants to stop working at 4pm on a Wednesday"
-    meme link to the channel
-
-    Args:
-        bot (Any): Discord bot
-        channel_id (str): Channel id to send the message
-    """
-
-    await bot.wait_until_ready()
-    channel = bot.get_channel(channel_id)
-    await channel.send(LINKS["ximira_xelo"])
+    await channel.send(file=discord.File(file_path))
 
 
 SCHEDULES = [
     {
-        "timed_func": last_gas,
+        "timed_func": send_link,
         "day_of_week": 3,
-        "time_of_day": "14:00:00",
+        "time_of_day": "11:00:00",
         "args": [],
         "kwargs": {
             "channel_id": CHANNEL_IDS["geralt"],
+            "link_name": LINKS["last_gas"],
         },
     },
     {
-        "timed_func": sad_mondays,
+        "timed_func": send_file,
         "day_of_week": 0,
         "time_of_day": "09:00:00",
         "args": [],
         "kwargs": {
             "channel_id": CHANNEL_IDS["geralt"],
+            "file_path": "assets/images/john_kleber_monday.jpeg",
         },
     },
     {
-        "timed_func": ximira_xelo,
+        "timed_func": send_link,
         "day_of_week": 2,
         "time_of_day": "16:00:00",
         "args": [],
         "kwargs": {
             "channel_id": CHANNEL_IDS["geralt"],
+            "link_name": LINKS["ximira_xelo"],
+        },
+    },
+    {
+        "timed_func": send_link,
+        "day_of_week": 4,
+        "time_of_day": "17:00:00",
+        "args": [],
+        "kwargs": {
+            "channel_id": CHANNEL_IDS["geralt"],
+            "link_name": LINKS["del_rey"],
+        },
+    },
+    {
+        "timed_func": send_link,
+        "day_of_week": 0,
+        "time_of_day": "11:00:00",
+        "args": [],
+        "kwargs": {
+            "channel_id": CHANNEL_IDS["geralt"],
+            "link_name": LINKS["bom_dia_pedrin"],
         },
     },
 ]
