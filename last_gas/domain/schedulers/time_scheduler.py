@@ -76,7 +76,7 @@ SCHEDULES = [
         "args": [],
         "kwargs": {
             "channel_id": CHANNEL_IDS["geralt"],
-            "link_name": LINKS["last_gas"],
+            "link_name": "last_gas",
         },
     },
     {
@@ -96,7 +96,7 @@ SCHEDULES = [
         "args": [],
         "kwargs": {
             "channel_id": CHANNEL_IDS["geralt"],
-            "link_name": LINKS["ximira_xelo"],
+            "link_name": "ximira_xelo",
         },
     },
     {
@@ -106,7 +106,7 @@ SCHEDULES = [
         "args": [],
         "kwargs": {
             "channel_id": CHANNEL_IDS["geralt"],
-            "link_name": LINKS["del_rey"],
+            "link_name": "del_rey",
         },
     },
     {
@@ -116,7 +116,7 @@ SCHEDULES = [
         "args": [],
         "kwargs": {
             "channel_id": CHANNEL_IDS["geralt"],
-            "link_name": LINKS["bom_dia_pedrin"],
+            "link_name": "bom_dia_pedrin",
         },
     },
 ]
