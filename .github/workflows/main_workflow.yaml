@@ -23,3 +23,13 @@ jobs:
     - name: Style check with Flake8
       run: |
         make check-flake8
+    - name: dokcer login 
+      env:
+        DOCKER_USER: ${{secrets.DOCKER_USER}}
+        DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+      run: |
+        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+    - name: docker remove images
+      run: docker build . --tag last-gas-run:$(date +%s)
+    - name: docker push
+      run: docker push ${{secrets.DOCKER_USER}}/last-gas
