@@ -33,3 +33,13 @@ jobs:
       run: docker build . --tag ${{secrets.DOCKER_USER}}/last-gas
     - name: docker push
       run: docker push ${{secrets.DOCKER_USER}}/last-gas
+    - name: deploy on droplet
+      uses: appleboy/ssh-action@v0.1.2
+      with:
+        host: ${{secrets.SSH_HOST}}
+        key: ${{secrets.SSH_KEY}}
+        husername: ${{secrets.SSH_USERNAME}}
+        run: |
+        docker rmi $(docker images -a -q)
+        docker pull joaomoraes/last-gas
+        docker run joaomoraes/last-gas
