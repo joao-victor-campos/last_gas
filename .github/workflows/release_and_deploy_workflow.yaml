@@ -1,0 +1,80 @@
+name: "Release and Deploy Pipeline"
+on:
+  pull_request:
+    types: 
+      - closed
+    branches:
+      - 'main'
+
+jobs:
+  deploy-pipeline:
+    if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'release/')
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: 'main'
+    - name: Get version
+      run: echo "version=$(grep __version__ setup.py | head -1 | cut -d \" -f2 | cut -d \' -f2)" >> $GITHUB_ENV
+    - name: Create tag
+      uses: actions/github-script@v5
+      with:
+        script: |
+          github.rest.git.createRef({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: 'refs/tags/<tagname>',
+            sha: context.sha
+          })
+    - name: Create release
+      uses: "actions/github-script@v5"
+      with:
+        github-token: "${{ secrets.GITHUB_TOKEN }}"
+        script: |
+          try {
+            await github.rest.repos.createRelease({
+              draft: false,
+              generate_release_notes: true,
+              name: process.env.version,
+              owner: context.repo.owner,
+              prerelease: false,
+              repo: context.repo.repo,
+              tag_name: process.env.version,
+            });
+          } catch (error) {
+            core.setFailed(error.message);
+          }
+    - name: docker login 
+      env:
+        DOCKER_USER: ${{secrets.DOCKER_USER}}
+        DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+      run: |
+        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+    - name: docker build image
+      run: docker build -f Dockerfile --tag last-gas .
+    - name: docker tag image
+      run : |
+        docker tag last-gas ${{secrets.DOCKER_USER}}/last-gas:latest
+        docker tag last-gas ${{secrets.DOCKER_USER}}/last-gas:${{env.version}}
+    - name: docker push
+      run: |
+        docker push ${{secrets.DOCKER_USER}}/last-gas:latest
+        docker push ${{secrets.DOCKER_USER}}/last-gas:${{env.version}}
+    - name: Configure SSH
+      run: |
+        mkdir -p ~/.ssh/
+        echo "$SSH_KEY" > ~/.ssh/deploy.key
+        chmod 600 ~/.ssh/deploy.key
+        cat >>~/.ssh/config <<END
+        Host deploy
+          HostName $SSH_HOST
+          User $SSH_USER
+          IdentityFile ~/.ssh/deploy.key
+          StrictHostKeyChecking no
+        END
+      env:
+        SSH_USER: ${{ secrets.SSH_USERNAME }}
+        SSH_KEY: ${{ secrets.SSH_KEY}}
+        SSH_HOST: ${{ secrets.SSH_HOST }}
+    - name: deploy on droplet
+      run: ssh deploy 'bash -s' < scripts/deploy.sh
