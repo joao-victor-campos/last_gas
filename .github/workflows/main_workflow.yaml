@@ -34,7 +34,7 @@ jobs:
     - name: docker push
       run: docker push ${{secrets.DOCKER_USER}}/last-gas
     - name: Configure SSH
-        run: |
+      run: |
           mkdir -p ~/.ssh/
           echo "$SSH_KEY" > ~/.ssh/deploy.key
           chmod 600 ~/.ssh/deploy.key
