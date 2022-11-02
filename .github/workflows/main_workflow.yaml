@@ -33,13 +33,22 @@ jobs:
       run: docker build . --tag ${{secrets.DOCKER_USER}}/last-gas
     - name: docker push
       run: docker push ${{secrets.DOCKER_USER}}/last-gas
+    - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/deploy.key
+          chmod 600 ~/.ssh/deploy.key
+          cat >>~/.ssh/config <<END
+          Host deploy
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/deploy.key
+            StrictHostKeyChecking no
+          END
+        env:
+          SSH_USER: ${{ secrets.SSH_USERNAME }}
+          SSH_KEY: ${{ secrets.SSH_KEY}}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
     - name: deploy on droplet
-      uses: appleboy/ssh-action@v0.1.2
-      with:
-        host: ${{secrets.SSH_HOST}}
-        key: ${{secrets.SSH_KEY}}
-        husername: ${{secrets.SSH_USERNAME}}
-        script: |
-        docker rmi $(docker images -a -q)
-        docker pull joaomoraes/last-gas
-        docker run joaomoraes/last-gas
+      run: ssh deploy 'bash -s' < scripts/deploy.sh
+        
