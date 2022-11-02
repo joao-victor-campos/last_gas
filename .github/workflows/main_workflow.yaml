@@ -39,7 +39,7 @@ jobs:
         host: ${{secrets.SSH_HOST}}
         key: ${{secrets.SSH_KEY}}
         husername: ${{secrets.SSH_USERNAME}}
-        run: |
+        script: |
         docker rmi $(docker images -a -q)
         docker pull joaomoraes/last-gas
         docker run joaomoraes/last-gas
