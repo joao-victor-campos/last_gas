@@ -32,4 +32,4 @@ jobs:
     - name: docker remove images
       run: docker build . --tag last-gas-run:$(date +%s)
     - name: docker push
-      run: docker push ${{secrets.DOCKER_USER}}/last-gas
+      run: docker push ${{secrets.DOCKER_USER}}/last-gas:last-gas-run:$(date +%s)
