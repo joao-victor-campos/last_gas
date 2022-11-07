@@ -26,3 +26,18 @@ class APILoader(ABC):
         :rtype: Dict[str, Any]
         """
         pass
+
+
+class DBLoader(ABC):
+    @abstractmethod
+    def query_db(self, query: str, url:str) -> Dict[str, Any]:
+        """Queries a postgres database.
+
+        Args:
+            query (str): Query string
+            url (str): postgres url to retrieve data.
+
+        Returns:
+            Dict[str, Any]: data.
+        """
+        pass
