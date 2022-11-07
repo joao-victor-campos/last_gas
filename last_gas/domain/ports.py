@@ -30,7 +30,7 @@ class APILoader(ABC):
 
 class DBLoader(ABC):
     @abstractmethod
-    def query_db(self, query: str, url:str) -> Dict[str, Any]:
+    def query_db(self, query: str, url: str) -> Dict[str, Any]:
         """Queries a postgres database.
 
         Args:
