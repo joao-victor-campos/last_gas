@@ -189,7 +189,7 @@ SCHEDULES = [
         args=[],
         kwargs={
             "channel_id": CHANNEL_IDS["bot_promos"],
-            "search_list": ["headset"],
+            "search_list": ["livro RPG"],
         },
     ),
     ScheduleData(
