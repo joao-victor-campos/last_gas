@@ -30,8 +30,8 @@ class APILoader(ABC):
 
 class DBLoader(ABC):
     @abstractmethod
-    def query_db(self, query: str, url: str) -> Dict[str, Any]:
-        """Queries a postgres database.
+    def get(self, obj: str, url: str) -> Dict[str, Any]:
+        """get data from a postgres database.
 
         Args:
             query (str): Query string
@@ -40,4 +40,17 @@ class DBLoader(ABC):
         Returns:
             Dict[str, Any]: data.
         """
+        pass
+
+    @abstractmethod
+    def insert(self, obj: str, url: str) -> None:
+        """_summary_
+
+        Args:
+            obj (str): _description_
+            url (str): _description_
+        """
+        pass
+
+    def update():
         pass
