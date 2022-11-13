@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 
 class ConfigLoader(ABC):
@@ -31,7 +31,7 @@ class APILoader(ABC):
 class DBLoader(ABC):
     @abstractmethod
     def get(self, obj: str, url: str) -> Dict[str, Any]:
-        """get data from a postgres database.
+        """Get data from a postgres database.
 
         Args:
             query (str): Query string
@@ -43,14 +43,20 @@ class DBLoader(ABC):
         pass
 
     @abstractmethod
-    def insert(self, obj: str, url: str) -> None:
-        """_summary_
+    def insert(self, obj: List, scheduled_time: List) -> None:
+        """Insert a regestry to a databse.
 
         Args:
-            obj (str): _description_
-            url (str): _description_
+            obj (str): List[str]
+            scheduled_time (str): List[str]
         """
         pass
 
-    def update():
+    def update(self, obj: List, scheduled_time: List) -> None:
+        """Update a database regestry.
+
+        Args:
+            obj (str): List[str]
+            scheduled_time (str): List[str]
+        """
         pass
