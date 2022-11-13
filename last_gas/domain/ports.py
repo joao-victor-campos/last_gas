@@ -30,7 +30,7 @@ class APILoader(ABC):
 
 class DBLoader(ABC):
     @abstractmethod
-    def get(self, obj: str, url: str) -> Dict[str, Any]:
+    def get(self,id: int, obj: str, url: str) -> Dict[str, Any]:
         """Get data from a postgres database.
 
         Args:
@@ -43,7 +43,7 @@ class DBLoader(ABC):
         pass
 
     @abstractmethod
-    def insert(self, obj: List, scheduled_time: List) -> None:
+    def insert(self, id: int, obj: List, scheduled_time: List) -> None:
         """Insert a regestry to a databse.
 
         Args:
@@ -52,11 +52,11 @@ class DBLoader(ABC):
         """
         pass
 
-    def update(self, obj: List, scheduled_time: List) -> None:
-        """Update a database regestry.
+    def update(self, id: int, param: Dict[str]) -> None:
+        """_summary_
 
         Args:
-            obj (str): List[str]
-            scheduled_time (str): List[str]
+            id (int): Regestry ID.
+            param (Dict[str]): Dict with new state of the registry
         """
         pass

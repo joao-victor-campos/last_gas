@@ -31,8 +31,8 @@ class PostgresLoader(DBLoader):
         Session = sessionmaker(bind=self.engine)
         self.session = Session()
 
-    def get(self, obj: str) -> Dict[str, Any]:
-        return self.session.query(Schedules).filter(Schedules.obj_name == obj)
+    def get(self, id: int, obj: str) -> Dict[str, Any]:
+        return self.session.query(Schedules).filter(Schedules.scedule_id == id)
 
     def insert(
         self,
@@ -43,5 +43,5 @@ class PostgresLoader(DBLoader):
         self.session.add(schedule)
         self.session.commit()
 
-    def update(self, obj: str, param, new_obj: str):
-        self.session.query(Schedules).filter(Schedules.obj_name == obj).update()
+    def update(self, id: int, params: Dict[str]):
+        self.session.query(Schedules).filter(Schedules.scedule_id == id).update(params, synchronize_session="fetch")
