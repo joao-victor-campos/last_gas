@@ -30,7 +30,7 @@ class APILoader(ABC):
 
 class DBLoader(ABC):
     @abstractmethod
-    def get(self,id: int, obj: str, url: str) -> Dict[str, Any]:
+    def get(self, id: int, obj: str, url: str) -> Dict[str, Any]:
         """Get data from a postgres database.
 
         Args:
