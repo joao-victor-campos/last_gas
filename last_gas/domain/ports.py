@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 
 class ConfigLoader(ABC):
@@ -43,7 +43,7 @@ class DBLoader(ABC):
         pass
 
     @abstractmethod
-    def insert(self, id: int, obj: List, scheduled_time: List) -> None:
+    def insert(self, orm_obj: object) -> None:
         """Insert a regestry to a databse.
 
         Args:
@@ -52,11 +52,7 @@ class DBLoader(ABC):
         """
         pass
 
-    def update(self, id: int, param: Dict[str]) -> None:
-        """_summary_
-
-        Args:
-            id (int): Regestry ID.
-            param (Dict[str]): Dict with new state of the registry
-        """
+    def update(
+        self, orm_obj: object, primary_key_name: int, params: Dict[str, Any]
+    ) -> None:
         pass

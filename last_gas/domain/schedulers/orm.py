@@ -1,6 +1,5 @@
 from sqlalchemy import Column, String, Integer, DateTime, ARRAY, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base, relationship
-from typing import Any, Dict, List
+from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
 
@@ -20,10 +19,10 @@ class Schedules(Base):
     __tablename__ = "schedules"
 
     schedule_id = Column("schedule_id", Integer, primary_key=True)
-    search_list = Column("search_list", ARRAY)
-    days_of_week = Column("days_of_week", ARRAY)
-    times_of_day = Column("times_of_day", ARRAY)
-    args = Column("args", ARRAY, nullable=True)
+    search_list = Column("search_list", ARRAY(String))
+    days_of_week = Column("days_of_week", ARRAY(String))
+    times_of_day = Column("times_of_day", ARRAY(String))
+    args = Column("args", ARRAY(String), nullable=True)
     kwargs = Column("kwargs", String, nullable=True)
     created_at = Column("created_at", DateTime)
     updated_at = Column("updated_at", DateTime)
