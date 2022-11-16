@@ -30,12 +30,12 @@ class APILoader(ABC):
 
 class DBLoader(ABC):
     @abstractmethod
-    def get(self, id: int, obj: str, url: str) -> Dict[str, Any]:
+    def get(self, orm_class, id: int) -> Dict[str, Any]:
         """Get data from a postgres database.
 
         Args:
-            query (str): Query string
-            url (str): postgres url to retrieve data.
+            orm_class (class): ORM table class.
+            id (str): Primary key.
 
         Returns:
             Dict[str, Any]: data.
@@ -47,12 +47,39 @@ class DBLoader(ABC):
         """Insert a regestry to a databse.
 
         Args:
-            obj (str): List[str]
-            scheduled_time (str): List[str]
+            orm_obj (object): ORM table class.
         """
         pass
 
+    @abstractmethod
     def update(
-        self, orm_obj: object, primary_key_name: int, params: Dict[str, Any]
+        self,
+        table_class: object,
+        primary_key_name: str,
+        new_values: Dict[str, Any],
+        id: int,
     ) -> None:
+        """Update a regestry on the database.
+
+        Args:
+            table_class (object): ORM table class.
+            primary_key_name (str): Column name.
+            new_values (Dict[str, Any]): New values to be updated.
+            id (int): Primary key.
+        """
+        pass
+
+    def delete(
+        self, 
+        table_class: object,
+        primary_key_name: str,
+        id: int,
+    ) -> None:
+        """Delete a regestry on the database.
+
+        Args:
+            table_class (object): ORM table class.
+            primary_key_name (str): Column name.
+            id (int): Primary key.
+        """
         pass
