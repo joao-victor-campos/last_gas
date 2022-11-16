@@ -3,3 +3,5 @@ discord.py==1.7.3
 pyyaml
 requests
 SQLAlchemy
+psycopg2
+psycopg2-binary
