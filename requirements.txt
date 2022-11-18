@@ -1,5 +1,5 @@
-discord==1.7.3
-discord.py==1.7.3
+discord==2.1.0
+discord.py==2.1.0
 pyyaml
 requests
 SQLAlchemy

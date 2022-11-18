@@ -70,3 +70,4 @@ async def pelando_promos(ctx, *search):
             await ctx.send(embed=card)
     else:
         await ctx.send(content="Nada nessa porra <:TRUCO:729720154866450553>")
+

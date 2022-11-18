@@ -5,11 +5,13 @@ import discord
 from discord.ext.commands import Bot
 from typing import Any, Callable, Dict, List, Optional
 
+from last_gas.adapters.db_adapters import PostgresLoader 
 from last_gas.domain.commands.promos import pelando_promos
 from last_gas.domain.constants import CHANNEL_IDS
 from assets.youtube_links import LINKS
 
-
+# schedule = PostgresLoader()
+# schedule.get()
 @dataclass(frozen=True)
 class ScheduleData:
     timed_func: Callable
@@ -165,7 +167,7 @@ SCHEDULES = [
     # Show G29 promos
     ScheduleData(
         timed_func=send_pelando_promos,
-        times_of_day=["10:00:00", "18:00:00"],
+        times_of_day=["10:00:00", "18:00:00", "21:17:00"],
         args=[],
         kwargs={
             "channel_id": CHANNEL_IDS["bot_promos"],
