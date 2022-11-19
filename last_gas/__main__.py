@@ -1,26 +1,43 @@
-from discord.ext import commands
+import asyncio
+from typing import Any
+
+import discord
 
 from last_gas.adapters import EnvVarConfigLoader
 from last_gas.domain.schedulers.time_scheduler import background_scheduler, SCHEDULES
-from last_gas.domain.commands.promos import pelando_promos
+from last_gas.domain.commands.promos import PelandoPromosCog
+from last_gas.domain.commands.register_schedules import ScheduleCog
 
 
-bot = commands.Bot(command_prefix="$")
-config_manager = EnvVarConfigLoader()
+class LastGasBot(discord.ext.commands.Bot):
+    def __init__(self):
+        intents = discord.Intents.default()
+        intents.message_content = True
+        super().__init__(command_prefix="$", intents=intents)
+
+    async def on_ready(self) -> None:
+        commands_synced = await self.tree.sync()
+        print(f"{len(commands_synced)} commands")
+        print("Bot started!")
+
+    async def on_message(self, message: Any) -> None:
+        if message.content.startswith("$"):
+            print(f"Message from {message.author}: {message.content}")
+        await self.process_commands(message)
 
 
-@bot.command()
-async def promos(ctx, *search) -> None:
-    """Register the pelando promotion command."""
+async def main() -> None:
+    bot = LastGasBot()
+    config_manager = EnvVarConfigLoader()
+    configs = config_manager.load_configs()
 
-    await pelando_promos(ctx, *search)
+    # Set commands
+    await bot.add_cog(PelandoPromosCog(bot))
+    await bot.add_cog(ScheduleCog(bot))
 
-
-def set_scheduled_functions() -> None:
-    """Schedule bot actions."""
-
+    # Set background tasks
     for schedule in SCHEDULES:
-        bot.loop.create_task(
+        asyncio.create_task(
             background_scheduler(
                 timed_func=schedule.timed_func,
                 days_of_week=schedule.days_of_week,
@@ -31,8 +48,9 @@ def set_scheduled_functions() -> None:
             )
         )
 
+    # Start bot
+    await bot.start(configs["TOKEN"])
+
 
 if __name__ == "__main__":
-    configs = config_manager.load_configs()
-    set_scheduled_functions()
-    bot.run(configs["TOKEN"])
+    asyncio.run(main())
