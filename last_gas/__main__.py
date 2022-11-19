@@ -1,36 +1,41 @@
-from discord.ext import commands
-from discord import app_commands
-import discord
 import asyncio
+from typing import Any
+
+import discord
 
 from last_gas.adapters import EnvVarConfigLoader
 from last_gas.domain.schedulers.time_scheduler import background_scheduler, SCHEDULES
-from last_gas.domain.commands.promos import pelando_promos
-from last_gas.domain.commands.register_schedules import modal_scheduler
-
-intents = discord.Intents.default()
-intents.message_content = True
-bot = commands.Bot(command_prefix="$", intents=intents)
-# aclient = client()
-config_manager = EnvVarConfigLoader()
+from last_gas.domain.commands.promos import PelandoPromosCog
+from last_gas.domain.commands.register_schedules import ScheduleCog
 
 
-@bot.command()
-async def promos(ctx, *search) -> None:
-    """Register the pelando promotion command."""
+class LastGasBot(discord.ext.commands.Bot):
+    def __init__(self):
+        intents = discord.Intents.default()
+        intents.message_content = True
+        super().__init__(command_prefix="$", intents=intents)
 
-    await pelando_promos(ctx, *search)
+    async def on_ready(self) -> None:
+        commands_synced = await self.tree.sync()
+        print(f"{len(commands_synced)} commands")
+        print("Bot started!")
 
-@commands.command()
-async def schedule(ctx) -> None:
-    """Register the modal command."""
+    async def on_message(self, message: Any) -> None:
+        if message.content.startswith("$"):
+            print(f"Message from {message.author}: {message.content}")
+        await self.process_commands(message)
 
-    await modal_scheduler(ctx)
 
+async def main() -> None:
+    bot = LastGasBot()
+    config_manager = EnvVarConfigLoader()
+    configs = config_manager.load_configs()
 
-async def set_scheduled_functions() -> None:
-    """Schedule bot actions."""
+    # Set commands
+    await bot.add_cog(PelandoPromosCog(bot))
+    await bot.add_cog(ScheduleCog(bot))
 
+    # Set background tasks
     for schedule in SCHEDULES:
         asyncio.create_task(
             background_scheduler(
@@ -43,10 +48,9 @@ async def set_scheduled_functions() -> None:
             )
         )
 
-async def main():
-    configs = config_manager.load_configs()
-    await set_scheduled_functions()
+    # Start bot
     await bot.start(configs["TOKEN"])
+
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -1,31 +1,27 @@
 import discord
 from discord.ext import commands
+from discord import app_commands
 
-class SurveyModal(discord.ui.Modal, title = "Survey"):
-    name = discord.ui.TextInput(label='Name')
-    answer = discord.ui.TextInput(label="name", style=discord.TextStyle.paragraph)
+
+class ScheduleSurveyModal(discord.ui.Modal, title="Survey"):
+    schedule_name = discord.ui.TextInput(label="Schedule Name")
+    days_of_week = discord.ui.TextInput(label="Days of Week")
+    times_of_day = discord.ui.TextInput(label="Times of Day")
+    args = discord.ui.TextInput(label="Args")
+    kwargs = discord.ui.TextInput(label="Kwargs")
 
     async def on_submit(self, interaction: discord.Interaction):
-        await interaction.response.send_massage(f'Submission entered', ephemeral=True)
-
-class Select(discord.ui.Select):
-    def __init__(self):
-        options=[
-            discord.SelectOption(label="Option 1",emoji="👌",description="This is option 1!"),
-            discord.SelectOption(label="Option 2",emoji="✨",description="This is option 2!"),
-            discord.SelectOption(label="Option 3",emoji="🎭",description="This is option 3!")
-            ]
-        super().__init__(placeholder="Select an option",max_values=1,min_values=1,options=options)
-
-class SurveyView(discord.ui.View):
-    def __init__(self, *, timeout=180) -> None:
-        super().__init__()(timeout=timeout)
-        self.add_item(Select())
-
-async def modal_scheduler(ctx):
-    print("Pinto")
-    #await interaction.response.send_modal(SurveyModal())
-    await ctx.send(view = SurveyView())
+        await interaction.response.send_message("Submission entered", ephemeral=True)
 
 
-    
+class ScheduleCog(commands.Cog):
+    def __init__(self, bot) -> None:
+        self.bot = bot
+
+    @commands.Cog.listener()
+    async def on_command_error(self, _, err):
+        print(err)
+
+    @app_commands.command(name="schedule")
+    async def schedule_command(self, interaction) -> None:
+        await interaction.response.send_modal(ScheduleSurveyModal())
