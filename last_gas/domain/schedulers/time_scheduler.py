@@ -5,7 +5,7 @@ import discord
 from discord.ext.commands import Bot
 from typing import Any, Callable, Dict, List, Optional
 
-from last_gas.domain.commands.promos import pelando_promos
+from last_gas.domain.commands.promos import PelandoPromosCog
 from last_gas.domain.constants import CHANNEL_IDS
 from assets.youtube_links import LINKS
 
@@ -108,7 +108,7 @@ async def send_pelando_promos(
     await channel.send(
         content=f"Searching promos for keywords: {', '.join(search_list)}"
     )
-    await pelando_promos(channel, *search_list)
+    await PelandoPromosCog.pelando_promos(channel, *search_list)
 
 
 SCHEDULES = [
