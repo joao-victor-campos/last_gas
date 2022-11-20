@@ -70,7 +70,7 @@ class DBLoader(ABC):
         pass
 
     def delete(
-        self, 
+        self,
         table_class: object,
         primary_key_name: str,
         id: int,

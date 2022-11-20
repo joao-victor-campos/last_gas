@@ -19,7 +19,6 @@ class Schedules(Base):
     __tablename__ = "schedules"
 
     schedule_id = Column("schedule_id", Integer, primary_key=True)
-    search_list = Column("search_list", ARRAY(String))
     days_of_week = Column("days_of_week", ARRAY(String))
     times_of_day = Column("times_of_day", ARRAY(String))
     args = Column("args", ARRAY(String), nullable=True)

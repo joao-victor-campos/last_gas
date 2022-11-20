@@ -19,6 +19,13 @@ class PostgresLoader(DBLoader):
             if not key.startswith("_")
         }
 
+    def get_all(self, orm_class, id: int) -> Dict[str, Any]:
+        return {
+            key: val
+            for key, val in self.session.query(orm_class).all().__dict__.items()
+            if not key.startswith("_")
+        }
+
     def insert(self, orm_obj: object) -> None:
         self.session.add(orm_obj)
         self.session.commit()

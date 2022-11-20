@@ -5,12 +5,29 @@ import discord
 from discord.ext.commands import Bot
 from typing import Any, Callable, Dict, List, Optional
 
+from last_gas.adapters import EnvVarConfigLoader
+from last_gas.adapters.engine_creator import EngineCreator
+from last_gas.adapters.db_adapters import PostgresLoader
 from last_gas.domain.commands.promos import PelandoPromosCog
 from last_gas.domain.constants import CHANNEL_IDS
 from assets.youtube_links import LINKS
 
-# schedule = PostgresLoader()
-# schedule.get()
+config_manager = EnvVarConfigLoader()
+configs = config_manager.load_configs()
+user = configs["USER"]
+password = configs["PASSWORD"]
+
+creator = EngineCreator(
+    database_flavour=database_flavour,
+    host=host,
+    database=database,
+    user=user,
+    password=password,
+)
+engine = creator.create()
+schedule = PostgresLoader()
+schedules = schedule.get_all()
+
 @dataclass(frozen=True)
 class ScheduleData:
     timed_func: Callable
@@ -111,95 +128,13 @@ async def send_pelando_promos(
     )
     await PelandoPromosCog.pelando_promos(channel, *search_list)
 
-
-SCHEDULES = [
-    ScheduleData(
-        timed_func=send_link,
-        days_of_week=[3],
-        times_of_day=["11:00:00"],
-        args=[],
-        kwargs={
-            "channel_id": CHANNEL_IDS["geralt"],
-            "link_name": "last_gas",
-        },
-    ),
-    ScheduleData(
-        timed_func=send_file,
-        days_of_week=[0],
-        times_of_day=["09:00:00"],
-        args=[],
-        kwargs={
-            "channel_id": CHANNEL_IDS["geralt"],
-            "file_path": "assets/images/john_kleber_monday.jpeg",
-        },
-    ),
-    ScheduleData(
-        timed_func=send_link,
-        days_of_week=[2],
-        times_of_day=["16:00:00"],
-        args=[],
-        kwargs={
-            "channel_id": CHANNEL_IDS["geralt"],
-            "link_name": "ximira_xelo",
-        },
-    ),
-    ScheduleData(
-        timed_func=send_link,
-        days_of_week=[4],
-        times_of_day=["17:00:00"],
-        args=[],
-        kwargs={
-            "channel_id": CHANNEL_IDS["geralt"],
-            "link_name": "del_rey",
-        },
-    ),
-    ScheduleData(
-        timed_func=send_link,
-        days_of_week=[0],
-        times_of_day=["11:00:00"],
-        args=[],
-        kwargs={
-            "channel_id": CHANNEL_IDS["geralt"],
-            "link_name": "bom_dia_pedrin",
-        },
-    ),
-    # Show G29 promos
-    ScheduleData(
-        timed_func=send_pelando_promos,
-        times_of_day=["10:00:00", "18:00:00", "21:17:00"],
-        args=[],
-        kwargs={
-            "channel_id": CHANNEL_IDS["bot_promos"],
-            "search_list": ["g29"],
-        },
-    ),
-    # Show oculus quest promos
-    ScheduleData(
-        timed_func=send_pelando_promos,
-        times_of_day=["10:00:00", "18:00:00"],
-        args=[],
-        kwargs={
-            "channel_id": CHANNEL_IDS["bot_promos"],
-            "search_list": ["oculus quest 2"],
-        },
-    ),
-    # Show headsets promos
-    ScheduleData(
-        timed_func=send_pelando_promos,
-        times_of_day=["10:00:00", "18:00:00"],
-        args=[],
-        kwargs={
-            "channel_id": CHANNEL_IDS["bot_promos"],
-            "search_list": ["livro RPG"],
-        },
-    ),
-    ScheduleData(
-        timed_func=send_pelando_promos,
-        times_of_day=["10:00:00", "18:00:00"],
-        args=[],
-        kwargs={
-            "channel_id": CHANNEL_IDS["bot_promos"],
-            "search_list": ["buds 2 pro"],
-        },
-    ),
-]
+for schedule in schedules:
+    SCHEDULES = []
+    SCHEDULES = ScheduleData(
+            timed_func=send_link,
+            days_of_week=schedule["days_of_week"],
+            times_of_day=schedule["times_of_day"],
+            args=schedule["args"],
+            kwargs=schedule["kwargs"],
+        )
+    
