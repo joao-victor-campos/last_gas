@@ -23,7 +23,7 @@ jobs:
           github.rest.git.createRef({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            ref: 'refs/tags/<tagname>',
+            ref: 'refs/tags/${process.env.version}',
             sha: context.sha
           })
     - name: Create release
