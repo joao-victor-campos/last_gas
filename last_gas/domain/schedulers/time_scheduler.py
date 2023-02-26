@@ -179,7 +179,7 @@ SCHEDULES = [
         args=[],
         kwargs={
             "channel_id": CHANNEL_IDS["bot_promos"],
-            "search_list": ["RTX 4070ti"],
+            "search_list": ["RTX 4070 ti"],
         },
     ),
     ScheduleData(
