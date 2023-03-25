@@ -2,7 +2,6 @@ from last_gas.adapters.api_adapters import GraphqlLoader
 
 
 class Pelando:
-
     API_URL = "https://www.pelando.com.br/api/graphql"
 
     pelando_search_params_pattern = """
