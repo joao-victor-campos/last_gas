@@ -60,6 +60,11 @@ jobs:
       run: |
         docker push ${{secrets.DOCKER_USER}}/last-gas:latest
         docker push ${{secrets.DOCKER_USER}}/last-gas:${{env.version}}
+    - name: ZeroTier
+      uses: zerotier/github-action@v1.0.1
+      with:
+        network_id: ${{ secrets.ZEROTIER_NETWORK_ID }}
+        auth_token: ${{ secrets.ZEROTIER_CENTRAL_TOKEN }}   
     - name: Configure SSH
       run: |
         mkdir -p ~/.ssh/
