@@ -128,13 +128,85 @@ async def send_pelando_promos(
     )
     await PelandoPromosCog.pelando_promos(channel, *search_list)
 
-for schedule in schedules:
-    SCHEDULES = []
-    SCHEDULES = ScheduleData(
-            timed_func=send_link,
-            days_of_week=schedule["days_of_week"],
-            times_of_day=schedule["times_of_day"],
-            args=schedule["args"],
-            kwargs=schedule["kwargs"],
-        )
-    
+
+SCHEDULES = [
+    ScheduleData(
+        timed_func=send_link,
+        days_of_week=[3],
+        times_of_day=["11:00:00"],
+        args=[],
+        kwargs={
+            "channel_id": CHANNEL_IDS["geralt"],
+            "link_name": "last_gas",
+        },
+    ),
+    ScheduleData(
+        timed_func=send_file,
+        days_of_week=[0],
+        times_of_day=["09:00:00"],
+        args=[],
+        kwargs={
+            "channel_id": CHANNEL_IDS["geralt"],
+            "file_path": "assets/images/john_kleber_monday.jpeg",
+        },
+    ),
+    ScheduleData(
+        timed_func=send_link,
+        days_of_week=[2],
+        times_of_day=["16:00:00"],
+        args=[],
+        kwargs={
+            "channel_id": CHANNEL_IDS["geralt"],
+            "link_name": "ximira_xelo",
+        },
+    ),
+    ScheduleData(
+        timed_func=send_link,
+        days_of_week=[4],
+        times_of_day=["17:00:00"],
+        args=[],
+        kwargs={
+            "channel_id": CHANNEL_IDS["geralt"],
+            "link_name": "del_rey",
+        },
+    ),
+    ScheduleData(
+        timed_func=send_link,
+        days_of_week=[0],
+        times_of_day=["11:00:00"],
+        args=[],
+        kwargs={
+            "channel_id": CHANNEL_IDS["geralt"],
+            "link_name": "bom_dia_pedrin",
+        },
+    ),
+    # Show oculus quest promos
+    ScheduleData(
+        timed_func=send_pelando_promos,
+        times_of_day=["10:00:00", "18:00:00"],
+        args=[],
+        kwargs={
+            "channel_id": CHANNEL_IDS["bot_promos"],
+            "search_list": ["RTX 4080"],
+        },
+    ),
+    # Show headsets promos
+    ScheduleData(
+        timed_func=send_pelando_promos,
+        times_of_day=["10:00:00", "18:00:00"],
+        args=[],
+        kwargs={
+            "channel_id": CHANNEL_IDS["bot_promos"],
+            "search_list": ["RTX 4070 ti"],
+        },
+    ),
+    ScheduleData(
+        timed_func=send_pelando_promos,
+        times_of_day=["10:00:00", "18:00:00"],
+        args=[],
+        kwargs={
+            "channel_id": CHANNEL_IDS["bot_promos"],
+            "search_list": ["buds 2 pro"],
+        },
+    ),
+]
