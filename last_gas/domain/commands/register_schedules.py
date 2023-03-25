@@ -3,15 +3,14 @@ from discord.ext import commands
 from discord import app_commands
 import uuid
 from datetime import datetime
+from sqlalchemy import create_engine
 
-from last_gas.adapters.engine_creator import EngineCreator
 from last_gas.adapters.db_adapters import PostgresLoader
 from last_gas.adapters import EnvVarConfigLoader
 from last_gas.domain.schedulers import Schedules, SchedulesTypes
 
 
 class ScheduleSurveyModal(discord.ui.Modal, title="Survey"):
-
     schedule_name = discord.ui.TextInput(label="Schedule Name")
     schedule_type = discord.ui.TextInput(label="Schedule Type")
     days_of_week = discord.ui.TextInput(label="Days of Week")
@@ -35,18 +34,10 @@ class ScheduleSurveyModal(discord.ui.Modal, title="Survey"):
         )
         config_manager = EnvVarConfigLoader()
         configs = config_manager.load_configs()
-        user = configs["USER"]
-        password = configs["PASSWORD"]
+        database_url = configs["DATABASE_URL"]
 
-        creator = EngineCreator(
-            database_flavour="postgresql",
-            host="localhost",
-            database="postgresql",
-            user=user,
-            password=password,
-        )
-        engine = creator.create()
-        loader = PostgresLoader(engine) 
+        engine = create_engine(database_url)
+        loader = PostgresLoader(engine)
         loader.insert(schedule)
         await interaction.response.send_message("Submission entered", ephemeral=True)
 
