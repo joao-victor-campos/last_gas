@@ -162,16 +162,6 @@ SCHEDULES = [
             "link_name": "bom_dia_pedrin",
         },
     ),
-    # Show G29 promos
-    ScheduleData(
-        timed_func=send_pelando_promos,
-        times_of_day=["10:00:00", "18:00:00"],
-        args=[],
-        kwargs={
-            "channel_id": CHANNEL_IDS["bot_promos"],
-            "search_list": ["g29"],
-        },
-    ),
     # Show oculus quest promos
     ScheduleData(
         timed_func=send_pelando_promos,
@@ -179,7 +169,7 @@ SCHEDULES = [
         args=[],
         kwargs={
             "channel_id": CHANNEL_IDS["bot_promos"],
-            "search_list": ["oculus quest 2"],
+            "search_list": ["RTX 4080"],
         },
     ),
     # Show headsets promos
@@ -189,7 +179,7 @@ SCHEDULES = [
         args=[],
         kwargs={
             "channel_id": CHANNEL_IDS["bot_promos"],
-            "search_list": ["livro RPG"],
+            "search_list": ["RTX 4070 ti"],
         },
     ),
     ScheduleData(
