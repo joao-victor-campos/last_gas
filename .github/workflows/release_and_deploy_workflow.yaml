@@ -4,10 +4,13 @@ on:
     types: 
       - closed
     branches:
-      - 'main'
+      - main
+  push:
+    branches:
+      - dev
 
 jobs:
-  deploy-pipeline:
+  create-realease:
     if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'release/')
     runs-on: ubuntu-latest
     steps:
@@ -44,7 +47,12 @@ jobs:
           } catch (error) {
             core.setFailed(error.message);
           }
-    - name: docker login 
+  
+  deploy-docker:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: docker login
       env:
         DOCKER_USER: ${{secrets.DOCKER_USER}}
         DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
@@ -52,14 +60,24 @@ jobs:
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - name: docker build image
       run: docker build -f Dockerfile --tag last-gas .
-    - name: docker tag image
+    - name: docker tag and push image prod
+      if: github.ref_name	!= 'dev'
       run : |
         docker tag last-gas ${{secrets.DOCKER_USER}}/last-gas:latest
         docker tag last-gas ${{secrets.DOCKER_USER}}/last-gas:${{env.version}}
-    - name: docker push
-      run: |
         docker push ${{secrets.DOCKER_USER}}/last-gas:latest
         docker push ${{secrets.DOCKER_USER}}/last-gas:${{env.version}}
+    - name: docker tag and push image dev
+      if: github.ref_name	== 'dev'
+      run : |
+        docker tag last-gas ${{secrets.DOCKER_USER}}/last-gas:dev
+        docker push ${{secrets.DOCKER_USER}}/last-gas:dev
+  
+  deploy-service:
+    runs-on: ubuntu-latest
+    needs: deploy-docker
+    steps:
+    - uses: actions/checkout@v2
     - name: ZeroTier
       uses: zerotier/github-action@v1.0.1
       with:
@@ -81,5 +99,10 @@ jobs:
         SSH_USER: ${{ secrets.SSH_USERNAME }}
         SSH_KEY: ${{ secrets.SSH_KEY}}
         SSH_HOST: ${{ secrets.SSH_HOST }}
-    - name: deploy on droplet
-      run: ssh deploy 'bash -s' < scripts/deploy.sh
+    - name: deploy on server - prod
+      if: github.ref_name	!= 'dev'
+      run: ssh deploy 'bash -s' < scripts/deploy-prod.sh
+    - name: deploy server - dev
+      if: github.ref_name	== 'dev'
+      run: ssh deploy 'bash -s' < scripts/deploy-dev.sh
+    

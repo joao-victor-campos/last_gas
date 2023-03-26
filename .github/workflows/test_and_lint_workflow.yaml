@@ -2,7 +2,8 @@ name: "Lint and Tests Pipeline"
 on: 
   push: 
     branches: 
-      - main 
+      - main
+      - dev
   pull_request: 
 
 jobs:
