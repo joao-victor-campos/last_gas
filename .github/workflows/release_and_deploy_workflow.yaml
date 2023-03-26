@@ -4,8 +4,8 @@ on:
     types: 
       - closed
     branches:
-      - 'main'
-      - 'dev'
+      - main
+      - dev
 
 jobs:
   create-realease:
