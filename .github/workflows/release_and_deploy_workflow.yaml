@@ -75,6 +75,7 @@ jobs:
   
   deploy-service:
     runs-on: ubuntu-latest
+    needs: deploy-docker
     steps:
     - uses: actions/checkout@v2
     - name: ZeroTier
@@ -104,3 +105,4 @@ jobs:
     - name: deploy server - dev
       if: github.ref_name	== 'dev'
       run: ssh deploy 'bash -s' < scripts/deploy-dev.sh
+    
