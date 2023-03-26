@@ -1,13 +1,12 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-import uuid
 from datetime import datetime
 from sqlalchemy import create_engine
 
 from last_gas.adapters.db_adapters import PostgresLoader
 from last_gas.adapters import EnvVarConfigLoader
-from last_gas.domain.schedulers import Schedules, SchedulesTypes
+from last_gas.domain.schedulers import Schedules
 
 
 class ScheduleSurveyModal(discord.ui.Modal, title="Survey"):
