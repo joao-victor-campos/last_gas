@@ -4,10 +4,24 @@ from datetime import datetime, timedelta
 import discord
 from discord.ext.commands import Bot
 from typing import Any, Callable, Dict, List, Optional
+from sqlalchemy import create_engine
 
+from last_gas.adapters import EnvVarConfigLoader
+from last_gas.adapters.db_adapters import PostgresLoader
 from last_gas.domain.commands.promos import PelandoPromosCog
 from last_gas.domain.constants import CHANNEL_IDS
 from assets.youtube_links import LINKS
+
+config_manager = EnvVarConfigLoader()
+configs = config_manager.load_configs()
+user = configs["USER"]
+password = configs["PASSWORD"]
+database_url = configs["DATABASE_URL"]
+
+
+engine = create_engine(database_url)
+schedule = PostgresLoader(engine)
+schedules = schedule.get_all()
 
 
 @dataclass(frozen=True)

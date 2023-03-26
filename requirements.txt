@@ -2,3 +2,6 @@ discord==2.*
 discord.py==2.*
 pyyaml==6.*
 requests==2.*
+SQLAlchemy==1.4.*
+pg8000==1.*
+

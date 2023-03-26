@@ -17,3 +17,5 @@ CHANNEL_IDS = {
     "private_2": 819669095539539979,
     "bot_promos": 1036018407558098955,
 }
+
+SCHEDULERS_TYPES = ["send_link", "send_link", "pelando_promos"]
