@@ -180,4 +180,13 @@ SCHEDULES = [
             "search_list": ["Nintendo Switch"],
         },
     ),
+    ScheduleData(
+        timed_func=send_pelando_promos,
+        times_of_day=["10:00:00", "18:00:00"],
+        args=[],
+        kwargs={
+            "channel_id": CHANNEL_IDS["bot_promos"],
+            "search_list": ["Nintendo Switch OLED"],
+        },
+    ),
 ]
